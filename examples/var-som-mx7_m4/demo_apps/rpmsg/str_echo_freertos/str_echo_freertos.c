@@ -47,8 +47,40 @@
  */
 #define APP_MU_IRQ_PRIORITY 3
 
+SemaphoreHandle_t xSemaphore = NULL;
+
 /* Globals */
 static char app_buf[512]; /* Each RPMSG buffer can carry less than 512 payload */
+
+/*!
+ * @brief A basic user-defined task
+ */
+void HelloTask(void *pvParameters)
+{
+    const TickType_t xDelay = 2000 / portTICK_PERIOD_MS;
+    int beatnum = 0;
+
+    if( xSemaphoreTake( xSemaphore, 0 ) == pdTRUE )
+    {
+        /* Print the initial banner */
+        PRINTF("\r\nHeartbeat task created successfully!\r\n");
+        xSemaphoreGive( xSemaphore );
+    }
+
+    while(1)
+    {
+        if( xSemaphoreTake( xSemaphore, 0 ) == pdTRUE )
+        {
+            PRINTF("HEARTBEAT: %d\r\n", beatnum);
+            xSemaphoreGive( xSemaphore );
+            if (beatnum < 9)
+                beatnum++;
+            else
+                beatnum = 0;
+        }
+        vTaskDelay( xDelay );
+    }
+}
 
 /*!
  * @brief A basic RPMSG task
@@ -64,16 +96,24 @@ static void StrEchoTask(void *pvParameters)
     void *tx_buf;
     unsigned long size;
 
-    /* Print the initial banner */
-    PRINTF("\r\nRPMSG String Echo FreeRTOS RTOS API Demo...\r\n");
+    if( xSemaphoreTake( xSemaphore, 0 ) == pdTRUE )
+    {
+        /* Print the initial banner */
+        PRINTF("\r\nRPMSG String Echo FreeRTOS RTOS API Demo...\r\n");
 
-    /* RPMSG Init as REMOTE */
-    PRINTF("RPMSG Init as Remote\r\n");
+        /* RPMSG Init as REMOTE */
+        PRINTF("RPMSG Init as Remote\r\n");
+        xSemaphoreGive( xSemaphore );
+    }
+
     result = rpmsg_rtos_init(0 /*REMOTE_CPU_ID*/, &rdev, RPMSG_MASTER, &app_chnl);
     assert(result == 0);
 
-    PRINTF("Name service handshake is done, M4 has setup a rpmsg channel [%d ---> %d]\r\n", app_chnl->src, app_chnl->dst);
-
+    if( xSemaphoreTake( xSemaphore, 0 ) == pdTRUE )
+    {
+        PRINTF("Name service handshake is done, M4 has setup a rpmsg channel [%d ---> %d]\r\n", app_chnl->src, app_chnl->dst);
+        xSemaphoreGive( xSemaphore );
+    }
     /*
      * str_echo demo loop
      */
@@ -88,10 +128,15 @@ static void StrEchoTask(void *pvParameters)
         memcpy(app_buf, rx_buf, len);
         app_buf[len] = 0; /* End string by '\0' */
 
-        if ((len == 2) && (app_buf[0] == 0xd) && (app_buf[1] == 0xa))
-            PRINTF("Get New Line From Master Side\r\n");
-        else
-            PRINTF("Get Message From Master Side : \"%s\" [len : %d]\r\n", app_buf, len);
+        if( xSemaphoreTake( xSemaphore, 0 ) == pdTRUE )
+        {
+            if ((len == 2) && (app_buf[0] == 0xd) && (app_buf[1] == 0xa))
+                PRINTF("Get New Line From Master Side\r\n");
+            else
+                PRINTF("Get Message From Master Side : \"%s\" [len : %d]\r\n", app_buf, len);
+
+            xSemaphoreGive( xSemaphore );
+        }
 
         /* Get tx buffer from RPMsg */
         tx_buf = rpmsg_rtos_alloc_tx_buffer(app_chnl->rp_ept, &size);
@@ -131,9 +176,15 @@ int main(void)
     NVIC_SetPriority(BOARD_MU_IRQ_NUM, APP_MU_IRQ_PRIORITY);
     NVIC_EnableIRQ(BOARD_MU_IRQ_NUM);
 
+    xSemaphore = xSemaphoreCreateMutex();
+
     /* Create a demo task. */
     xTaskCreate(StrEchoTask, "String Echo Task", APP_TASK_STACK_SIZE,
                 NULL, tskIDLE_PRIORITY+1, NULL);
+
+    // Create a heartbeat task.
+    xTaskCreate(HelloTask, "Print Task", configMINIMAL_STACK_SIZE,
+                NULL, tskIDLE_PRIORITY+2, NULL);
 
     /* Start FreeRTOS scheduler. */
     vTaskStartScheduler();
