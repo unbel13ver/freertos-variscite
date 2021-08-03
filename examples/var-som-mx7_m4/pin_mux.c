@@ -140,18 +140,19 @@ void configure_uart_pins(UART_Type* base)
 {
     switch((uint32_t)base)
     {
-        case UART2_BASE:
-            // UART2 iomux configuration
-            IOMUXC_SW_MUX_CTL_PAD_LCD_CLK = IOMUXC_SW_MUX_CTL_PAD_LCD_CLK_MUX_MODE(4);
-            IOMUXC_SW_MUX_CTL_PAD_LCD_ENABLE = IOMUXC_SW_MUX_CTL_PAD_LCD_ENABLE_MUX_MODE(4);
-            IOMUXC_SW_PAD_CTL_PAD_LCD_CLK = IOMUXC_SW_PAD_CTL_PAD_LCD_CLK_PE_MASK  |
-                                            IOMUXC_SW_PAD_CTL_PAD_LCD_CLK_PS(3)    |
-                                            IOMUXC_SW_PAD_CTL_PAD_LCD_CLK_HYS_MASK |
-                                            IOMUXC_SW_PAD_CTL_PAD_LCD_CLK_DSE(0);
-            IOMUXC_SW_PAD_CTL_PAD_LCD_ENABLE = IOMUXC_SW_PAD_CTL_PAD_LCD_ENABLE_PE_MASK  |
-                                               IOMUXC_SW_PAD_CTL_PAD_LCD_ENABLE_PS(3)    |
-                                               IOMUXC_SW_PAD_CTL_PAD_LCD_ENABLE_HYS_MASK |
-                                               IOMUXC_SW_PAD_CTL_PAD_LCD_ENABLE_DSE(0);
+        case UART7_BASE:
+            // UART7 iomux configuration
+            IOMUXC_SW_MUX_CTL_PAD_EPDC_DATA13 = IOMUXC_SW_MUX_CTL_PAD_EPDC_DATA13_MUX_MODE(3);
+            IOMUXC_SW_MUX_CTL_PAD_EPDC_DATA12 = IOMUXC_SW_MUX_CTL_PAD_EPDC_DATA12_MUX_MODE(3);
+
+            IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA13 = IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA13_PE_MASK  |
+                                            IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA13_PS(3)    |
+                                            IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA13_HYS_MASK |
+                                            IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA13_DSE(0);
+            IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA12 = IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA12_PE_MASK  |
+                                               IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA12_PS(3)    |
+                                               IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA12_HYS_MASK |
+                                               IOMUXC_SW_PAD_CTL_PAD_EPDC_DATA12_DSE(0);
             break;
         default:
             break;

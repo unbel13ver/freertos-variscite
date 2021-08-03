@@ -221,9 +221,9 @@ uint32_t get_uart_clock_freq(UART_Type* base)
 
     switch((uint32_t)base)
     {
-        case UART2_BASE:
-            root = CCM_GetRootMux(CCM, ccmRootUart2);
-            CCM_GetRootDivider(CCM, ccmRootUart2, &pre, &post);
+        case UART7_BASE:
+            root = CCM_GetRootMux(CCM, ccmRootUart7);
+            CCM_GetRootDivider(CCM, ccmRootUart7, &pre, &post);
             break;
         default:
             return 0;

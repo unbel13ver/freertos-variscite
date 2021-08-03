@@ -90,12 +90,12 @@
 #define BOARD_GPIO_KEY_HANDLER                GPIO1_INT15_0_Handler
 
 /* Debug UART information for this board */
-#define BOARD_DEBUG_UART_RDC_PDAP             rdcPdapUart2
-#define BOARD_DEBUG_UART_CCM_ROOT             ccmRootUart2
-#define BOARD_DEBUG_UART_CCM_CCGR             ccmCcgrGateUart2
-#define BOARD_DEBUG_UART_BASEADDR             UART2
-#define BOARD_DEBUG_UART_IRQ_NUM              UART2_IRQn
-#define BOARD_DEBUG_UART_HANDLER              UART2_Handler
+#define BOARD_DEBUG_UART_RDC_PDAP             rdcPdapUart7
+#define BOARD_DEBUG_UART_CCM_ROOT             ccmRootUart7
+#define BOARD_DEBUG_UART_CCM_CCGR             ccmCcgrGateUart7
+#define BOARD_DEBUG_UART_BASEADDR             UART7
+#define BOARD_DEBUG_UART_IRQ_NUM              UART7_IRQn
+#define BOARD_DEBUG_UART_HANDLER              UART7_Handler
 
 /* MU information for this board*/
 #define BOARD_MU_HANDLER                      MU_M4_Handler
